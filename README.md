@@ -8,6 +8,9 @@ Create a folder named **CompactCode** under your app/code folder within your Mag
 You need to perform the following commands after that *(within your magento root directory via ssh)*:
 
 -php bin/magento cache:clear
+
 -php bin/magento setup:upgrade
+
 -php bin/magento setup:di:compile
+
 -php bin/magento setup:static-content:deploy

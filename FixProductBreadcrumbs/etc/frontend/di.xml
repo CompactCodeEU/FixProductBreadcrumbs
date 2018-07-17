@@ -1,0 +1,10 @@
+<!--
+  ~ Copyright (c) 2018.
+  ~ Copyright Holder : CompactCode - CompactCode BvBa - Belgium
+  ~ Copyright : Unless granted permission from CompactCode BvBa  you can not distrubute , reuse  , edit , resell or sell this.
+  -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Catalog\Controller\Product\View">
+        <plugin name="cc_product_breadcrumbs" type="CompactCode\FixProductBreadcrumbs\Plugin\Product\View" sortOrder="1"/>
+    </type>
+</config>

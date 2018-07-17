@@ -1,0 +1,35 @@
+{
+    "name": "compactcode/fixproductbreadcrumbs",
+    "description": "",
+    "require": {
+        "php": "~5.5.0|~5.6.0|~7.0.0",
+        "magento/module-catalog": "102.0.4",
+"magento/module-theme": "100.2.4",
+
+        "magento/magento-composer-installer": "*"
+    },
+    "suggest": {
+
+    },
+    "type": "magento2-module",
+    "version": "0.1.0",
+    "license": [
+
+    ],
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "CompactCode\\FixProductBreadcrumbs\\": ""
+        }
+    },
+    "extra": {
+        "map": [
+            [
+                "*",
+                "CompactCode/FixProductBreadcrumbs"
+            ]
+        ]
+    }
+}

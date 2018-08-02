@@ -5,16 +5,22 @@
  * Copyright : Unless granted permission from CompactCode BvBa  you can not distrubute , reuse  , edit , resell or sell this.
  */
 
+/**
+ * Created by PhpStorm.
+ * User: Rob Conings
+ * Date: 7/6/2018
+ * Time: 11:44 AM
+ */
+
 namespace CompactCode\FixProductBreadcrumbs\Plugin\Product;
 
 use Magento\Catalog\Controller\Product\View as MagentoView;
 use Magento\Catalog\Model\Product;
+use Magento\Framework\View\Result\PageFactory;
 use Magento\Store\Model\StoreManager;
 use Magento\Framework\Registry;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Catalog\Model\ResourceModel\Category\Collection;
-use Magento\Framework\View\Result\PageFactory;
-
 
 class View
 {
@@ -22,47 +28,52 @@ class View
     /**
      * @var Product
      */
-    private $product;
+    protected $product;
     /**
      * @var StoreManager
      */
-    private $storeManager;
+    protected $storeManager;
     /**
      * @var Registry
      */
-    private $registry;
+    protected $registry;
     /**
      * @var Collection
      */
-    private $collection;
-
+    protected $collection;
     /**
-     * @var \Magento\Framework\View\Result\PageFactory
+     * @var PageFactory
      */
-    protected $resultPageFactory;
+    private $resultPage;
+
 
     /**
      * View constructor.
      * @param StoreManager $storeManager
      * @param Registry $registry
      * @param Collection $collection
+     * @param PageFactory $resultPage
      */
     public function __construct(
         StoreManager $storeManager,
         Registry $registry,
         Collection $collection,
-        PageFactory $resultPageFactory)
+        PageFactory $resultPage)
     {
         $this->storeManager = $storeManager;
         $this->registry = $registry;
         $this->collection = $collection;
-        $this->resultPageFactory = $resultPageFactory;
+        $this->resultPage = $resultPage;
     }
 
     public function afterExecute(MagentoView $subject, $result)
     {
-        $page = $this->resultPageFactory->create();
-        $breadcrumbsBlock = $page->getLayout()->getBlock('breadcrumbs');
+        $resultPage = $this->resultPage->create();
+        $breadcrumbsBlock = $resultPage->getLayout()->getBlock('breadcrumbs');
+        if(!$breadcrumbsBlock || !isset($breadcrumbsBlock)){
+            return $result;
+
+        }
         $breadcrumbsBlock->addCrumb(
             'home',
             [
@@ -71,14 +82,14 @@ class View
                 'link' => $this->storeManager->getStore()->getBaseUrl()
             ]
         );
-        if(!isset($breadcrumbsBlock)){
-            return $result;
-        }
+
         try {
             $product = $this->getProduct();
         } catch (LocalizedException $e) {
             return $result;
         }
+
+        $resultPage->getConfig()->getTitle()->set($product->getName());
 
         if(null == $product->getCategory() || null == $product->getCategory()->getPath()){
             $breadcrumbsBlock->addCrumb(
@@ -110,7 +121,6 @@ class View
         foreach ($categoriesCollection->getItems() as $category) {
             if ($category->getIsActive() && $category->isInRootCategoryList()) {
                 $categoryId = $category->getId();
-                $path = [];
                 $path = [
                     'label' => $category->getName(),
                     'link' => $category->getUrl() ? $category->getUrl() : ''

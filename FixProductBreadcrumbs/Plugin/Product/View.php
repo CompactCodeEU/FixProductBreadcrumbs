@@ -5,13 +5,6 @@
  * Copyright : Unless granted permission from CompactCode BvBa  you can not distrubute , reuse  , edit , resell or sell this.
  */
 
-/**
- * Created by PhpStorm.
- * User: Rob Conings
- * Date: 7/6/2018
- * Time: 11:44 AM
- */
-
 namespace CompactCode\FixProductBreadcrumbs\Plugin\Product;
 
 use Magento\Catalog\Controller\Product\View as MagentoView;
@@ -20,6 +13,8 @@ use Magento\Store\Model\StoreManager;
 use Magento\Framework\Registry;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Catalog\Model\ResourceModel\Category\Collection;
+use Magento\Framework\View\Result\PageFactory;
+
 
 class View
 {
@@ -42,6 +37,11 @@ class View
     private $collection;
 
     /**
+     * @var \Magento\Framework\View\Result\PageFactory
+     */
+    protected $resultPageFactory;
+
+    /**
      * View constructor.
      * @param StoreManager $storeManager
      * @param Registry $registry
@@ -50,16 +50,19 @@ class View
     public function __construct(
         StoreManager $storeManager,
         Registry $registry,
-        Collection $collection)
+        Collection $collection,
+        PageFactory $resultPageFactory)
     {
         $this->storeManager = $storeManager;
         $this->registry = $registry;
         $this->collection = $collection;
+        $this->resultPageFactory = $resultPageFactory;
     }
 
     public function afterExecute(MagentoView $subject, $result)
     {
-        $breadcrumbsBlock = $result->getLayout()->getBlock('breadcrumbs');
+        $page = $this->resultPageFactory->create();
+        $breadcrumbsBlock = $page->getLayout()->getBlock('breadcrumbs');
         $breadcrumbsBlock->addCrumb(
             'home',
             [

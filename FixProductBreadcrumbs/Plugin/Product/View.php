@@ -21,6 +21,7 @@ use Magento\Store\Model\StoreManager;
 use Magento\Framework\Registry;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Catalog\Model\ResourceModel\Category\Collection;
+use Magento\Framework\View\Result\Page;
 
 class View
 {
@@ -68,6 +69,10 @@ class View
 
     public function afterExecute(MagentoView $subject, $result)
     {
+        if(!$result instanceof Page){
+            return $result;
+        }
+
         $resultPage = $this->resultPage->create();
         $breadcrumbsBlock = $resultPage->getLayout()->getBlock('breadcrumbs');
         if(!$breadcrumbsBlock || !isset($breadcrumbsBlock)){

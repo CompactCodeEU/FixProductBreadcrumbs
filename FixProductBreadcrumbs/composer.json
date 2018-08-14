@@ -18,18 +18,10 @@
     ],
     "autoload": {
         "files": [
-            "registration.php"
+            "src/registration.php"
         ],
         "psr-4": {
-            "CompactCode\\FixProductBreadcrumbs\\": ""
+            "CompactCode\\FixProductBreadcrumbs\\": "src"
         }
     },
-    "extra": {
-        "map": [
-            [
-                "*",
-                "CompactCode/FixProductBreadcrumbs"
-            ]
-        ]
-    }
 }

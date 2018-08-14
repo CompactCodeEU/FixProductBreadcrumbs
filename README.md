@@ -16,6 +16,8 @@ You need to perform the following commands after that *(within your magento root
 -php bin/magento setup:static-content:deploy
 
 ## Composer Install Instructions
-composer config repositories.compact-code-fix-product-breadcrumbs git git@github.com:CompactCodeEU/FixProductBreadcrumbs.git
-composer require compactcode/fixproductbreadcrumbs: "dev-master"
-php bin/magento setup:upgrade
+-composer config repositories.compact-code-fix-product-breadcrumbs git git@github.com:CompactCodeEU/FixProductBreadcrumbs.git
+
+-composer require compactcode/fixproductbreadcrumbs: "dev-master"
+
+-php bin/magento setup:upgrade

@@ -3,7 +3,7 @@ This is a Fix for Magento 2.2.4 and 2.2.5 where the Product Breadcrumbs are gene
 
 ## Installation
 
-Create a folder named **CompactCode** under your app/code folder within your Magento Root directory and place all provided files under that.
+Create a folder named **CompactCode/FixProductBreadcrumbs** under your app/code folder within your Magento Root directory and place all provided files within the src directory under that.
 
 You need to perform the following commands after that *(within your magento root directory via ssh)*:
 

@@ -7,13 +7,13 @@ Create a folder named **CompactCode/FixProductBreadcrumbs** under your app/code 
 
 You need to perform the following commands after that *(within your magento root directory via ssh)*:
 
-⋅⋅* php bin/magento cache:clear
+  * php bin/magento cache:clear
 
-⋅⋅* php bin/magento setup:upgrade
+  * php bin/magento setup:upgrade
 
-⋅⋅* php bin/magento setup:di:compile
+  * php bin/magento setup:di:compile
 
-⋅⋅* php bin/magento setup:static-content:deploy
+  * php bin/magento setup:static-content:deploy
 
 ## Composer Install Instructions
 -composer config repositories.compact-code-fix-product-breadcrumbs git git@github.com:CompactCodeEU/FixProductBreadcrumbs.git

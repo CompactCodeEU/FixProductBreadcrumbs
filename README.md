@@ -7,7 +7,7 @@ Create a folder named **CompactCode/FixProductBreadcrumbs** under your app/code 
 
 You need to perform the following commands after that *(within your magento root directory via ssh)*:
 
-  * `php bin/magento cache:clear`
+  * `php bin/magento cache:clean`
 
   * `php bin/magento setup:upgrade`
 

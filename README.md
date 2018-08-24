@@ -18,6 +18,6 @@ You need to perform the following commands after that *(within your magento root
 ## Composer Install Instructions
   * `composer config repositories.compact-code-fix-product-breadcrumbs git git@github.com:CompactCodeEU/FixProductBreadcrumbs.git`
 
-  * `composer require compactcode/fixproductbreadcrumbs: "dev-master"`
+  * `composer require "compactcode/fixproductbreadcrumbs:dev-master"`
 
   * `php bin/magento setup:upgrade`

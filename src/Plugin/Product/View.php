@@ -93,8 +93,11 @@ class View
         } catch (LocalizedException $e) {
             return $result;
         }
-
-        $resultPage->getConfig()->getTitle()->set($product->getName());
+        
+        $pageMainTitle = $resultPage->getLayout()->getBlock('page.main.title');
+        if ($pageMainTitle) {
+            $pageMainTitle->setPageTitle($product->getName());
+        }
 
         if(null == $product->getCategory() || null == $product->getCategory()->getPath()){
             $breadcrumbsBlock->addCrumb(

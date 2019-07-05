@@ -1,6 +1,6 @@
 # ALERT
 
-We are currently reworking this module and reviewing the bugs. A new version will be available by the end  of month (04/2019) depending on the timeframe that is needed to review this. We will do our best giving this priority but since this is a free module we can only give it limited resources.
+This fix has been abandoned. You are free to use it and adjust it however you please. Any contribution will still be reviewed and merged.
 
 # FixProductBreadcrumbs
 This is a Fix for Magento 2.2.4 and 2.2.5 where the Product Breadcrumbs are generated with JS normally and contain unwanted text

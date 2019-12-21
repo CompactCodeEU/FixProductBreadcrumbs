@@ -93,7 +93,7 @@ class View
         } catch (LocalizedException $e) {
             return $result;
         }
-        
+
         $pageMainTitle = $resultPage->getLayout()->getBlock('page.main.title');
         if ($pageMainTitle) {
             $pageMainTitle->setPageTitle($product->getName());
@@ -111,12 +111,12 @@ class View
         }
 
         $categories = $product->getCategory()->getPath();
-        $categoriesids = explode('/', $categories);
+        $categoriesIds = explode('/', $categories);
 
         $categoriesCollection = null;
         try {
             $categoriesCollection = $this->collection
-                ->addFieldToFilter('entity_id', array('in' => $categoriesids))
+                ->addFieldToFilter('entity_id', array('in' => $categoriesIds))
                 ->addAttributeToSelect('name')
                 ->addAttributeToSelect('url_key')
                 ->addAttributeToSelect('include_in_menu')
@@ -126,8 +126,9 @@ class View
             return $result;
         }
 
-        foreach ($categoriesCollection->getItems() as $category) {
-            if ($category->getIsActive() && $category->isInRootCategoryList()) {
+        foreach ($categoriesIds as $categoryId) {
+            $category = $categoriesCollection->getItemById($categoryId);
+            if ($category && $category->getIsActive() && $category->isInRootCategoryList()) {
                 $categoryId = $category->getId();
                 $path = [
                     'label' => $category->getName(),

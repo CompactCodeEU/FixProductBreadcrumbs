@@ -99,18 +99,41 @@ class View
             $pageMainTitle->setPageTitle($product->getName());
         }
 
-        if(null == $product->getCategory() || null == $product->getCategory()->getPath()){
-            $breadcrumbsBlock->addCrumb(
-                'cms_page',
-                [
-                    'label' => $product->getName(),
-                    'title' => $product->getName(),
-                ]
-            );
-            return $result;
-        }
-
-        $categories = $product->getCategory()->getPath();
+		$categories = null;
+        if (null == $product->getCategory() || null == $product->getCategory()->getPath()) {
+			try {
+				$categoriesCollection = null;
+				$categoriesCollection = $this->collection
+					->addFieldToFilter('entity_id', array('in' => $product->getCategoryIds()))
+					->addAttributeToSelect('name')
+					->addAttributeToSelect('url_key')
+					->addAttributeToSelect('include_in_menu')
+					->addAttributeToSelect('is_active')
+					->addAttributeToSelect('is_anchor');
+				foreach ($categoriesCollection->getItems() as $category) {
+					if ($category->getIsActive() && $category->isInRootCategoryList()) {
+						$categories = $category->getPath();
+						break;
+					}
+				}
+				$this->collection->clear()->getSelect()->reset(\Zend_Db_Select::WHERE);
+				if(null == $categories){
+					$breadcrumbsBlock->addCrumb(
+						'cms_page',
+						[
+							'label' => $product->getName(),
+							'title' => $product->getName(),
+						]
+					);
+					return $result;
+				}	
+			} catch (LocalizedException $e) {
+				return $result;
+			}
+        } else {
+			$categories = $product->getCategory()->getPath();
+		}
+		
         $categoriesids = explode('/', $categories);
 
         $categoriesCollection = null;
@@ -121,7 +144,8 @@ class View
                 ->addAttributeToSelect('url_key')
                 ->addAttributeToSelect('include_in_menu')
                 ->addAttributeToSelect('is_active')
-                ->addAttributeToSelect('is_anchor');
+                ->addAttributeToSelect('is_anchor')
+				->load();
         } catch (LocalizedException $e) {
             return $result;
         }
@@ -136,15 +160,15 @@ class View
                 $breadcrumbsBlock->addCrumb('category' . $categoryId, $path);
             }
         }
-
-        $breadcrumbsBlock->addCrumb(
-            'cms_page',
-            [
-                'label' => $product->getName(),
-                'title' => $product->getName(),
-            ]
-        );
-
+        /**
+        *$breadcrumbsBlock->addCrumb(
+        *    'cms_page',
+        *    [
+        *        'label' => $product->getName(),
+        *        'title' => $product->getName(),
+        *    ]
+        *);
+        */
         return $result;
     }
 

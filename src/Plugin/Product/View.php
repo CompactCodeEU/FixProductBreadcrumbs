@@ -22,6 +22,7 @@ use Magento\Framework\Registry;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Catalog\Model\ResourceModel\Category\Collection;
 use Magento\Framework\View\Result\Page;
+use Magento\Catalog\Model\CategoryRepository;
 
 class View
 {
@@ -46,6 +47,10 @@ class View
      * @var PageFactory
      */
     private $resultPage;
+    /**
+     * @var CategoryRepository
+     */
+    private $categoryRepository;
 
 
     /**
@@ -54,17 +59,20 @@ class View
      * @param Registry $registry
      * @param Collection $collection
      * @param PageFactory $resultPage
+     * @param CategoryRepository $categoryRepository
      */
     public function __construct(
         StoreManager $storeManager,
         Registry $registry,
         Collection $collection,
-        PageFactory $resultPage)
+        PageFactory $resultPage,
+        CategoryRepository $categoryRepository)
     {
         $this->storeManager = $storeManager;
         $this->registry = $registry;
         $this->collection = $collection;
         $this->resultPage = $resultPage;
+        $this->categoryRepository = $categoryRepository;
     }
 
     public function afterExecute(MagentoView $subject, $result)
@@ -99,76 +107,44 @@ class View
             $pageMainTitle->setPageTitle($product->getName());
         }
 
-		$categories = null;
-        if (null == $product->getCategory() || null == $product->getCategory()->getPath()) {
-			try {
-				$categoriesCollection = null;
-				$categoriesCollection = $this->collection
-					->addFieldToFilter('entity_id', array('in' => $product->getCategoryIds()))
-					->addAttributeToSelect('name')
-					->addAttributeToSelect('url_key')
-					->addAttributeToSelect('include_in_menu')
-					->addAttributeToSelect('is_active')
-					->addAttributeToSelect('is_anchor');
-				foreach ($categoriesCollection->getItems() as $category) {
-					if ($category->getIsActive() && $category->isInRootCategoryList()) {
-						$categories = $category->getPath();
-						break;
-					}
-				}
-				$this->collection->clear()->getSelect()->reset(\Zend_Db_Select::WHERE);
-				if(null == $categories){
-					$breadcrumbsBlock->addCrumb(
-						'cms_page',
-						[
-							'label' => $product->getName(),
-							'title' => $product->getName(),
-						]
-					);
-					return $result;
-				}	
-			} catch (LocalizedException $e) {
-				return $result;
-			}
-        } else {
-			$categories = $product->getCategory()->getPath();
-		}
-		
-        $categoriesids = explode('/', $categories);
-
-        $categoriesCollection = null;
         try {
-            $categoriesCollection = $this->collection
-                ->addFieldToFilter('entity_id', array('in' => $categoriesids))
-                ->addAttributeToSelect('name')
-                ->addAttributeToSelect('url_key')
-                ->addAttributeToSelect('include_in_menu')
-                ->addAttributeToSelect('is_active')
-                ->addAttributeToSelect('is_anchor')
-				->load();
+            $productPath = null;
+            if (null == $product->getCategory() || null == $product->getCategory()->getPath()) {
+                foreach ($product->getCategoryIds() as $categoryId) {
+                    $category = $this->categoryRepository->get($categoryId);
+                    if ($category->getIsActive() && $category->isInRootCategoryList()) {
+                        $productPath = $category->getPath();
+                        break;
+                    }
+                }
+            } else {
+                $productPath = $product->getCategory()->getPath();
+            }
+            if(null == $productPath){
+                $breadcrumbsBlock->addCrumb(
+                    'cms_page',
+                    [
+                        'label' => $product->getName(),
+                        'title' => $product->getName(),
+                    ]
+                );
+                return $result;
+            }
+            $categoriesIds = explode('/', $productPath);
+            foreach ($categoriesIds as $categoryId) {
+                $category = $this->categoryRepository->get($categoryId);
+                if ($category->getIsActive() && $category->isInRootCategoryList()) {
+                    $path = [
+                        'label' => $category->getName(),
+                        'link' => $category->getUrl() ? $category->getUrl() : ''
+                    ];
+                    $breadcrumbsBlock->addCrumb('category' . $categoryId, $path);
+                }
+            }
         } catch (LocalizedException $e) {
             return $result;
         }
 
-        foreach ($categoriesCollection->getItems() as $category) {
-            if ($category->getIsActive() && $category->isInRootCategoryList()) {
-                $categoryId = $category->getId();
-                $path = [
-                    'label' => $category->getName(),
-                    'link' => $category->getUrl() ? $category->getUrl() : ''
-                ];
-                $breadcrumbsBlock->addCrumb('category' . $categoryId, $path);
-            }
-        }
-        /**
-        *$breadcrumbsBlock->addCrumb(
-        *    'cms_page',
-        *    [
-        *        'label' => $product->getName(),
-        *        'title' => $product->getName(),
-        *    ]
-        *);
-        */
         return $result;
     }
 
